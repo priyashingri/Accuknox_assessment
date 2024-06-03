@@ -24,14 +24,14 @@ jobs:
     - name: Login to DockerHub
       uses: docker/login-action@v2
       with:
-        username: priya1shingri
-        password: Prt@428198
+        username: ${{ secrets.priyashingri.Accuknox_assessment.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.priyashingri.Accuknox_assessment.DOCKERHUB_PASSWORD }}
 
     - name: Build and push Docker image
       uses: docker/build-push-action@v2
       with:
         push: true
-        tags: priya1shingri/wisecow2:latest
+        tags: ${{ secrets.priyashingri.Accuknox_assessment.DOCKERHUB_USERNAME }}/wisecow2:latest
 
   deploy:
     needs: build

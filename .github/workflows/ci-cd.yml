@@ -25,7 +25,7 @@ jobs:
       uses: docker/login-action@v2
       with:
         username: priya1shingri
-        password: Prt@428198
+        password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
     - name: Build and push Docker image
       uses: docker/build-push-action@v2
@@ -45,6 +45,12 @@ jobs:
       uses: azure/setup-kubectl@v1
       with:
         version: 'latest'
+
+    - name: Decode KUBE_CONFIG_DATA and Set KUBECONFIG
+      run: |
+        echo "${{ secrets.KUBE_CONFIG_DATA }}" | base64 --decode > ${{ github.workspace }}/kubeconfig
+      env:
+        KUBECONFIG: ${{ github.workspace }}/kubeconfig
 
     - name: Create TLS Secret
       run: |

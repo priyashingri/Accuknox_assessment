@@ -24,14 +24,14 @@ jobs:
     - name: Login to DockerHub
       uses: docker/login-action@v2
       with:
-        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        username: priya1shingri
         password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
     - name: Build and push Docker image
       uses: docker/build-push-action@v2
       with:
         push: true
-        tags: ${{ secrets.DOCKERHUB_USERNAME }}/wisecow2:latest
+        tags: priya1shingri/wisecow2:latest
 
   deploy:
     needs: build
@@ -49,14 +49,6 @@ jobs:
     - name: Decode KUBE_CONFIG_DATA and Set KUBECONFIG
       run: |
         echo "${{ secrets.KUBE_CONFIG_DATA }}" | base64 --decode > ${{ github.workspace }}/kubeconfig
-        cat ${{ github.workspace }}/kubeconfig # Debugging: Print kubeconfig content
-      env:
-        KUBECONFIG: ${{ github.workspace }}/kubeconfig
-
-    - name: Test kubectl connection
-      run: |
-        kubectl cluster-info
-        kubectl get nodes # Debugging: Get nodes to test connection
       env:
         KUBECONFIG: ${{ github.workspace }}/kubeconfig
 

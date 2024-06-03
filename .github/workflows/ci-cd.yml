@@ -24,14 +24,14 @@ jobs:
     - name: Login to DockerHub
       uses: docker/login-action@v2
       with:
-        username: ${{ secrets.priyashingri.Accuknox_assessment.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.priyashingri.Accuknox_assessment.DOCKERHUB_PASSWORD }}
+        username: priya1shingri
+        password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
     - name: Build and push Docker image
       uses: docker/build-push-action@v2
       with:
         push: true
-        tags: ${{ secrets.priyashingri.Accuknox_assessment.DOCKERHUB_USERNAME }}/wisecow2:latest
+        tags: priya1shingri/wisecow2:latest
 
   deploy:
     needs: build
@@ -48,12 +48,12 @@ jobs:
 
     - name: Create TLS Secret
       run: |
-        kubectl create secret tls tls-secret --cert=tls.crt --key=tls.key
+        kubectl create secret tls tls-secret --cert=tls.crt --key=tls.key --namespace=default
       env:
-        KUBECONFIG: ./kubeconfig
+        KUBECONFIG: ${{ github.workspace }}/kubeconfig
 
     - name: Apply Ingress
       run: |
-        kubectl apply -f ingress.yaml
+        kubectl apply -f ingress.yaml --namespace=default
       env:
-        KUBECONFIG: ./kubeconfig
+        KUBECONFIG: ${{ github.workspace }}/kubeconfig

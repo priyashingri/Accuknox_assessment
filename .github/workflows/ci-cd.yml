@@ -53,26 +53,20 @@ jobs:
       env:
         KUBECONFIG: ${{ github.workspace }}/kubeconfig
 
-    - name: Test network connectivity
-      run: |
-        curl -k https://kubernetes.docker.internal:6443/version
-      env:
-        KUBECONFIG: ${{ github.workspace }}/kubeconfig
-
     - name: Create TLS Secret
       run: |
-        kubectl create secret tls tls-secret --cert=tls.crt --key=tls.key --namespace=default --server=https://kubernetes.docker.internal:6443
+        kubectl create secret tls tls-secret --cert=tls.crt --key=tls.key --namespace=default
       env:
         KUBECONFIG: ${{ github.workspace }}/kubeconfig
 
     - name: Deploy Application
       run: |
-        kubectl apply -f deployment.yaml --namespace=default --server=https://kubernetes.docker.internal:6443
+        kubectl apply -f deployment.yaml --namespace=default
       env:
         KUBECONFIG: ${{ github.workspace }}/kubeconfig
 
     - name: Apply Ingress (Optional - Update with your ingress manifest)
       run: |
-        kubectl apply -f ingress.yaml --namespace=default --server=https://kubernetes.docker.internal:6443
+        kubectl apply -f ingress.yaml --namespace=default
       env:
         KUBECONFIG: ${{ github.workspace }}/kubeconfig

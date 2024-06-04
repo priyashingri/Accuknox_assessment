@@ -62,7 +62,7 @@ jobs:
       env:
         KUBECONFIG: ${{ github.workspace }}/kubeconfig
 
-    - name: Apply Ingress (Optional - Update with your ingress manifest)
+    - name: Apply Ingress
       run: |
         kubectl apply -f ingress.yaml --namespace=default
       env:

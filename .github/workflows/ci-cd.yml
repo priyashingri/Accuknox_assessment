@@ -49,7 +49,7 @@ jobs:
 
     - name: Create TLS Secret
       run: |
-        kubectl create secret tls tls-secret --cert=tls.crt --key=tls.key --namespace=default --server=$KUBE_SERVER
+        kubectl create secret tls tls-secret --cert=tls.crt --key=tls.key --namespace=default --server=${{ secrets.KUBE_SERVER }} --username=your_username --password=your_password
       env:
         KUBE_SERVER: ${{secrets.KUBE_SERVER}}
 

@@ -54,12 +54,14 @@ jobs:
 
     - name: Create TLS Secret
       run: |
-        kubectl create secret tls tls-secret --cert=tls.crt --key=tls.key --namespace=default
+        API_SERVER=$(kubectl config view --minify -o jsonpath='{.clusters[0].cluster.server}')
+        kubectl create secret tls tls-secret --cert=tls.crt --key=tls.key --namespace=default --server=$API_SERVER
       env:
         KUBECONFIG: ${{ github.workspace }}/kubeconfig
 
     - name: Apply Ingress
       run: |
-        kubectl apply -f ingress.yaml --namespace=default
+        API_SERVER=$(kubectl config view --minify -o jsonpath='{.clusters[0].cluster.server}')
+        kubectl apply -f ingress.yaml --namespace=default --server=$API_SERVER
       env:
         KUBECONFIG: ${{ github.workspace }}/kubeconfig

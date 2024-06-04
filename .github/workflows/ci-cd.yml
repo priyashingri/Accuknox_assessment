@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     steps:
     - name: Checkout code
@@ -36,7 +36,7 @@ jobs:
 
   deploy:
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     steps:
     - name: Checkout code
@@ -50,12 +50,6 @@ jobs:
     - name: Decode KUBE_CONFIG_DATA and Set KUBECONFIG
       run: |
         echo "${{ secrets.KUBE_CONFIG_DATA }}" | base64 --decode > ${{ github.workspace }}/kubeconfig
-      env:
-        KUBECONFIG: ${{ github.workspace }}/kubeconfig
-
-    - name: Test network connectivity
-      run: |
-        curl -k https://kubernetes.docker.internal:6443/version
       env:
         KUBECONFIG: ${{ github.workspace }}/kubeconfig
 

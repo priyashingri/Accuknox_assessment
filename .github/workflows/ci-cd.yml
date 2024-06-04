@@ -45,21 +45,28 @@ jobs:
       uses: azure/setup-kubectl@v1
       with:
         version: 'latest'
-
     - name: Decode KUBE_CONFIG_DATA and Set KUBECONFIG
       run: |
         echo "${{ secrets.KUBE_CONFIG_DATA }}" | base64 --decode > ${{ github.workspace }}/kubeconfig
       env:
         KUBECONFIG: ${{ github.workspace }}/kubeconfig
+      
 
-    - name: Create TLS Secret
+    - name: Create TLS Secret (Using Service Name)
       run: |
         API_SERVER=$(kubectl config view --minify -o jsonpath='{.clusters[0].cluster.server}')
-        kubectl create secret tls tls-secret --cert=tls.crt --key=tls.key --namespace=default --server=$API_SERVER
+        kubectl create secret tls tls-secret --cert=tls.crt --key=tls.key --namespace=default --server=kubernetes.kube-system.svc.cluster.local:443
       env:
         KUBECONFIG: ${{ github.workspace }}/kubeconfig
 
-    - name: Apply Ingress
+    # Alternatively (if service name not available):
+    # - name: Create TLS Secret (Using Cluster IP - Adjust IP if needed)
+    #   run: |
+    #     kubectl create secret tls tls-secret --cert=tls.crt --key=tls.key --namespace=default --server=10.96.0.1:443  # Replace with your cluster IP if different
+    #   env:
+    #     KUBECONFIG: ${{ github.workspace }}/kubeconfig
+
+    - name: Apply Ingress (Optional - Update with your ingress manifest)
       run: |
         API_SERVER=$(kubectl config view --minify -o jsonpath='{.clusters[0].cluster.server}')
         kubectl apply -f ingress.yaml --namespace=default --server=$API_SERVER

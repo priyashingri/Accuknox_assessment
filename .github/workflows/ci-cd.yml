@@ -13,7 +13,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Set up Node.js
+    - name: Set up Node.js (Replace version if needed)
       uses: actions/setup-node@v2
       with:
         node-version: '20'
@@ -27,11 +27,11 @@ jobs:
         username: priya1shingri
         password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
-    - name: Build and push Docker image
+    - name: Build and push Docker image (Replace image name and tag)
       uses: docker/build-push-action@v2
       with:
         push: true
-        tags: priya1shingri/wisecow2:latest
+        tags: priya1shingri/wisecow2:<YOUR_DESIRED_TAG>  # Replace with your image name and tag
 
   deploy:
     needs: build
@@ -45,17 +45,17 @@ jobs:
       uses: azure/setup-kubectl@v1
       with:
         version: 'latest'
+
     - name: Decode KUBE_CONFIG_DATA and Set KUBECONFIG
       run: |
         echo "${{ secrets.KUBE_CONFIG_DATA }}" | base64 --decode > ${{ github.workspace }}/kubeconfig
       env:
         KUBECONFIG: ${{ github.workspace }}/kubeconfig
-      
 
     - name: Create TLS Secret (Using Service Name)
       run: |
         API_SERVER=$(kubectl config view --minify -o jsonpath='{.clusters[0].cluster.server}')
-        kubectl create secret tls tls-secret --cert=tls.crt --key=tls.key --namespace=default --server=kubernetes.kube-system.svc.cluster.local:443
+        kubectl create secret tls tls-secret --cert=tls.crt --key=tls.key --namespace=default --server=$API_SERVER:443
       env:
         KUBECONFIG: ${{ github.workspace }}/kubeconfig
 
@@ -65,6 +65,12 @@ jobs:
     #     kubectl create secret tls tls-secret --cert=tls.crt --key=tls.key --namespace=default --server=10.96.0.1:443  # Replace with your cluster IP if different
     #   env:
     #     KUBECONFIG: ${{ github.workspace }}/kubeconfig
+
+    - name: my-deployment (Replace with your deployment manifest)
+      run: |
+        kubectl apply -f deployment.yaml --namespace=default
+      env:
+        KUBECONFIG: ${{ github.workspace }}/kubeconfig
 
     - name: Apply Ingress (Optional - Update with your ingress manifest)
       run: |

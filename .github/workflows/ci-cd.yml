@@ -7,21 +7,19 @@ on:
 
 jobs:
   build:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v2
 
-    - name: Install Node.js 20
-      run: |
-        curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
-        sudo apt-get install -y nodejs
-        node -v
-        npm -v
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '20'
 
     - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v2
+      uses: docker/setup-buildx-action@v1
 
     - name: Login to DockerHub
       uses: docker/login-action@v2
@@ -38,27 +36,26 @@ jobs:
 
   deploy:
     needs: build
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
-
-    - name: Install Node.js 20
-      run: |
-        curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
-        sudo apt-get install -y nodejs
-        node -v
-        npm -v
+      uses: actions/checkout@v2
 
     - name: Set up kubectl
-      uses: azure/setup-kubectl@v3
+      uses: azure/setup-kubectl@v1
       with:
         version: 'latest'
 
     - name: Decode KUBE_CONFIG_DATA and Set KUBECONFIG
       run: |
         echo "${{ secrets.KUBE_CONFIG_DATA }}" | base64 --decode > ${{ github.workspace }}/kubeconfig
+      env:
+        KUBECONFIG: ${{ github.workspace }}/kubeconfig
+
+    - name: Test network connectivity
+      run: |
+        curl -k https://kubernetes.docker.internal:6443/version
       env:
         KUBECONFIG: ${{ github.workspace }}/kubeconfig
 

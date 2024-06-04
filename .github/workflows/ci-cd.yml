@@ -11,7 +11,7 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: Set up Node.js
       uses: actions/setup-node@v2
@@ -40,7 +40,7 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: Set up kubectl
       uses: azure/setup-kubectl@v1
@@ -65,7 +65,7 @@ jobs:
       env:
         KUBECONFIG: ${{ github.workspace }}/kubeconfig
 
-    - name: Apply Ingress 
+    - name: Apply Ingress (Optional - Update with your ingress manifest)
       run: |
         kubectl apply -f ingress.yaml --namespace=default --server=https://kubernetes.docker.internal:6443
       env:

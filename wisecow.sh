@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
-# Use environment variable or default value
+# Use environment variable
 SRVPORT="${SRVPORT:-4499}"
 RSPFILE=response
 
-# Remove the response file if it exists and create a named pipe
+
 rm -f $RSPFILE
 mkfifo $RSPFILE
 
@@ -16,7 +16,6 @@ get_api() {
 
 # Function to handle incoming requests
 handleRequest() {
-    # Process the request
     get_api
     mod=$(fortune)
 
@@ -45,6 +44,4 @@ main() {
         sleep 0.01
     done
 }
-
-# Run the main function
 main

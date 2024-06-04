@@ -3,10 +3,9 @@ set -e
 
 echo "Checking installation of cowsay and fortune..."
 
-# Debugging: Print PATH
-echo "PATH: $PATH"
 
-# List directories where games are commonly installed
+echo "PATH: $PATH"
+#  games are commonly installed
 echo "Contents of /usr/games:"
 ls -la /usr/games
 

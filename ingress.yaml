@@ -8,10 +8,10 @@ metadata:
 spec:
   tls:
   - hosts:
-    - wisecow.local  # Use the same CN as in the certificate
+    - wisecow.local  
     secretName: tls-secret
   rules:
-  - host: wisecow.local  # Use the same CN as in the certificate
+  - host: wisecow.local  
     http:
       paths:
       - path: /

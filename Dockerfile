@@ -1,4 +1,4 @@
-# Use a slim Ubuntu image as the base
+# Use aUbuntu image as the base
 FROM ubuntu:latest
 
 # Install dependencies
@@ -15,15 +15,11 @@ COPY check_installation.sh /check_installation.sh
 RUN chmod +x /check_installation.sh
 RUN /check_installation.sh
 
-# Copy the application files
+# Copy application files
 COPY . /app
 WORKDIR /app
 
-# Make the script executable
 RUN chmod +x wisecow.sh
-
-# Expose the service port
 EXPOSE 4499
-
-# Set the entrypoint and default command
+# Set the entrypoint 
 CMD ["sh", "-c", "./wisecow.sh && /bin/bash"]

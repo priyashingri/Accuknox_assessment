@@ -13,7 +13,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Set up Node.js (Replace version if needed)
+    - name: Set up Node.js
       uses: actions/setup-node@v2
       with:
         node-version: '20'
@@ -27,11 +27,12 @@ jobs:
         username: priya1shingri
         password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
-    - name: priya1shingri/wisecow2:latest
+    - name: Build and Push Docker Image
       uses: docker/build-push-action@v2
       with:
+        context: .
         push: true
-        tags: priya1shingri/wisecow2:latest  # Replace with your image name and tag
+        tags: priya1shingri/wisecow2:latest  
 
   deploy:
     needs: build
@@ -52,23 +53,26 @@ jobs:
       env:
         KUBECONFIG: ${{ github.workspace }}/kubeconfig
 
-
-    # Alternatively (if service name not available):
-    - name: Create TLS Secret (Using Cluster IP - Adjust IP if needed)
+    - name: Test network connectivity
       run: |
-        kubectl create secret tls tls-secret --cert=tls.crt --key=tls.key --namespace=default --server=10.105.144.243  # Replace with your cluster IP if different
+        curl -k https://kubernetes.docker.internal:6443/version
       env:
         KUBECONFIG: ${{ github.workspace }}/kubeconfig
 
-    - name: my-deployment (Replace with your deployment manifest)
+    - name: Create TLS Secret
       run: |
-        kubectl apply -f deployment.yaml --namespace=default
+        kubectl create secret tls tls-secret --cert=tls.crt --key=tls.key --namespace=default --server=https://kubernetes.docker.internal:6443
+      env:
+        KUBECONFIG: ${{ github.workspace }}/kubeconfig
+
+    - name: Deploy Application
+      run: |
+        kubectl apply -f deployment.yaml --namespace=default --server=https://kubernetes.docker.internal:6443
       env:
         KUBECONFIG: ${{ github.workspace }}/kubeconfig
 
     - name: Apply Ingress (Optional - Update with your ingress manifest)
       run: |
-        API_SERVER=$(kubectl config view --minify -o jsonpath='{.clusters[0].cluster.server}')
-        kubectl apply -f ingress.yaml --namespace=default --server=$API_SERVER
+        kubectl apply -f ingress.yaml --namespace=default --server=https://kubernetes.docker.internal:6443
       env:
         KUBECONFIG: ${{ github.workspace }}/kubeconfig

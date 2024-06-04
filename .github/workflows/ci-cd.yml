@@ -52,19 +52,13 @@ jobs:
       env:
         KUBECONFIG: ${{ github.workspace }}/kubeconfig
 
-    - name: Create TLS Secret (Using Service Name)
-      run: |
-        API_SERVER=$(kubectl config view --minify -o jsonpath='{.clusters[0].cluster.server}')
-        kubectl create secret tls tls-secret --cert=tls.crt --key=tls.key --namespace=default --server=$API_SERVER:443
-      env:
-        KUBECONFIG: ${{ github.workspace }}/kubeconfig
 
     # Alternatively (if service name not available):
-    # - name: Create TLS Secret (Using Cluster IP - Adjust IP if needed)
-    #   run: |
-    #     kubectl create secret tls tls-secret --cert=tls.crt --key=tls.key --namespace=default --server=10.96.0.1:443  # Replace with your cluster IP if different
-    #   env:
-    #     KUBECONFIG: ${{ github.workspace }}/kubeconfig
+    - name: Create TLS Secret (Using Cluster IP - Adjust IP if needed)
+      run: |
+        kubectl create secret tls tls-secret --cert=tls.crt --key=tls.key --namespace=default --server=10.96.0.1:443  # Replace with your cluster IP if different
+      env:
+        KUBECONFIG: ${{ github.workspace }}/kubeconfig
 
     - name: my-deployment (Replace with your deployment manifest)
       run: |

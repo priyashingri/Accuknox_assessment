@@ -31,7 +31,7 @@ jobs:
       uses: docker/build-push-action@v2
       with:
         push: true
-        tags: priya1shingri/wisecow2:<YOUR_DESIRED_TAG>  # Replace with your image name and tag
+        tags: priya1shingri/wisecow2:latest  # Replace with your image name and tag
 
   deploy:
     needs: build

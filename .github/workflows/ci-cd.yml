@@ -50,28 +50,22 @@ jobs:
     - name: Decode KUBE_CONFIG_DATA and Set KUBECONFIG
       run: |
         echo "${{ secrets.KUBE_CONFIG_DATA }}" | base64 --decode > ${{ github.workspace }}/kubeconfig
-        echo "KUBECONFIG set to: ${{ github.workspace }}/kubeconfig"
-      env:
-        KUBECONFIG: ${{ github.workspace }}/kubeconfig
+        echo "KUBECONFIG=${{ github.workspace }}/kubeconfig" >> $GITHUB_ENV
 
     - name: Create TLS Secret
       run: |
-        SERVER_URL=$(kubectl config view --minify -o jsonpath='{.clusters[0].cluster.server}')
-        kubectl create secret tls tls-secret --cert=tls.crt --key=tls.key --namespace=default --server=$SERVER_URL
+        kubectl create secret tls tls-secret --cert=tls.crt --key=tls.key --namespace=default
       env:
         KUBECONFIG: ${{ github.workspace }}/kubeconfig
 
     - name: Deploy Application
       run: |
-        SERVER_URL=$(kubectl config view --minify -o jsonpath='{.clusters[0].cluster.server}')
-        kubectl apply -f deployment.yaml --namespace=default --server=$SERVER_URL
+        kubectl apply -f deployment.yaml --namespace=default
       env:
         KUBECONFIG: ${{ github.workspace }}/kubeconfig
 
     - name: Apply Ingress (Optional - Update with your ingress manifest)
       run: |
-        SERVER_URL=$(kubectl config view --minify -o jsonpath='{.clusters[0].cluster.server}')
-        kubectl apply -f ingress.yaml --namespace=default --server=$SERVER_URL
+        kubectl apply -f ingress.yaml --namespace=default
       env:
         KUBECONFIG: ${{ github.workspace }}/kubeconfig
-

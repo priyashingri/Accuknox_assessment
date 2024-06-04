@@ -51,7 +51,7 @@ jobs:
       run: |
         kubectl create secret tls tls-secret --cert=tls.crt --key=tls.key --namespace=default --server=$KUBE_SERVER
       env:
-        KUBE_SERVER: ${{ secrets.KUBE_SERVER }}
+        KUBE_SERVER: ${{secrets.KUBE_SERVER}}
 
     - name: Deploy Application
       run: |

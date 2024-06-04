@@ -47,25 +47,16 @@ jobs:
       with:
         version: 'latest'
 
-    - name: Decode KUBE_CONFIG_DATA and Set KUBECONFIG
-      run: |
-        echo "${{ secrets.KUBE_CONFIG_DATA }}" | base64 --decode > ${{ github.workspace }}/kubeconfig
-        export KUBECONFIG=${{ github.workspace }}/kubeconfig
-
     - name: Create TLS Secret
       run: |
-        kubectl create secret tls tls-secret --cert=tls.crt --key=tls.key --namespace=default
+        kubectl create secret tls tls-secret --cert=tls.crt --key=tls.key --namespace=default --server=$KUBE_SERVER
       env:
-        KUBECONFIG: ${{ github.workspace }}/kubeconfig
+        KUBE_SERVER: ${{ secrets.KUBE_SERVER }}
 
     - name: Deploy Application
       run: |
-        kubectl apply -f deployment.yaml --namespace=default
-      env:
-        KUBECONFIG: ${{ github.workspace }}/kubeconfig
+        kubectl apply -f deployment.yaml --namespace=default --server=$KUBE_SERVER
 
     - name: Apply Ingress (Optional - Update with your ingress manifest)
       run: |
-        kubectl apply -f ingress.yaml --namespace=default
-      env:
-        KUBECONFIG: ${{ github.workspace }}/kubeconfig
+        kubectl apply -f ingress.yaml --namespace=default --server=$KUBE_SERVER
